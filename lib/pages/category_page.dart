@@ -1,6 +1,7 @@
 //import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:tubes_unique/models/category.dart';
 
 class CategoryPage extends StatefulWidget {
@@ -11,7 +12,10 @@ class CategoryPage extends StatefulWidget {
 }
 
 class _CategoryPageState extends State<CategoryPage> {
+  final _firestore = FirebaseFirestore.instance;
   bool isExpense = true;
+  final TextEditingController categoryController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   void openDialog() {
     showDialog(
@@ -20,35 +24,61 @@ class _CategoryPageState extends State<CategoryPage> {
           return AlertDialog(
             content: SingleChildScrollView(
               child: Center(
-                  child: Column(
-                children: [
-                  Text(
-                    (isExpense) ? "Add Income" : "Add Income",
-                    style: GoogleFonts.montserrat(
-                        fontSize: 18,
-                        color: (isExpense) ? Colors.red : Colors.green),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  TextField(
-                    decoration: InputDecoration(
-                        border: OutlineInputBorder(), hintText: "Name"),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  ElevatedButton(
-                      onPressed: () {},
-                      style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.green)),
-                      child: Text(
-                        "Save",
-                        style: GoogleFonts.montserrat(color: Colors.white),
-                      ))
-                ],
-              )),
+                  child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          Text(
+                            (isExpense) ? "Add Income" : "Add Income",
+                            style: GoogleFonts.montserrat(
+                                fontSize: 18,
+                                color: (isExpense) ? Colors.red : Colors.green),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          TextField(
+                            controller: categoryController,
+                            decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                hintText: "Category"),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          ElevatedButton(
+                              onPressed: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  try {
+                                    DocumentReference docRef = await _firestore
+                                        .collection('tubes_category')
+                                        .add({
+                                      'category': categoryController.text,
+                                      'timestamp': FieldValue.serverTimestamp(),
+                                    });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content:
+                                              Text('Category ditambahkan')),
+                                    );
+                                    Navigator.pop(context);
+                                  } catch (e) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('$e')),
+                                    );
+                                  }
+                                }
+                              },
+                              style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStateProperty.all(Colors.green)),
+                              child: Text(
+                                "Save",
+                                style:
+                                    GoogleFonts.montserrat(color: Colors.white),
+                              ))
+                        ],
+                      ))),
             ),
           );
         });

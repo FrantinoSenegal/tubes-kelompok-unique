@@ -1,3 +1,6 @@
+import 'dart:html';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -9,6 +12,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  // ignore: non_constant_identifier_names
+  final Key = GlobalKey<FormState>();
+  final TextEditingController titleController = TextEditingController();
+  final TextEditingController noteController = TextEditingController();
+  final _firestore = FirebaseFirestore.instance;
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    noteController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -113,29 +129,54 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Card(
               elevation: 10,
-              child: ListTile(
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.delete),
-                    SizedBox(width: 10),
-                    Icon(Icons.edit)
-                  ],
-                ),
-                title: Text("Rp.10.000"),
-                subtitle: Text("Makan"),
-                leading: Container(
-                  child: Icon(
-                    Icons.upload,
-                    color: Colors.red,
-                  ),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(8)),
-                ),
+              child: FutureBuilder<DocumentSnapshot>(
+                future: _firestore
+                    .collection('tubes')
+                    .doc('kwWvu9gNcFnzIa4ZLP7t')
+                    .get(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator(); // Menampilkan indikator loading jika data masih dimuat
+                  }
+                  if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  }
+                  if (!snapshot.hasData || snapshot.data!.data() == null) {
+                    return Text(
+                        'No data available'); // Menampilkan pesan jika tidak ada data yang tersedia
+                  }
+
+                  // Mengambil data dari Firestore
+                  var data = snapshot.data!.data();
+                  var amount = snapshot.data?['amount'];
+                  var category = snapshot.data?['category'].toString();
+
+                  return ListTile(
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.delete),
+                        SizedBox(width: 10),
+                        Icon(Icons.edit)
+                      ],
+                    ),
+                    title: Text("Rp.${amount.toString()}"),
+                    subtitle: Text(category.toString()),
+                    leading: Container(
+                      child: Icon(
+                        Icons.upload,
+                        color: Colors.red,
+                      ),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8)),
+                    ),
+                  );
+                },
               ),
             ),
           ),
+
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Card(

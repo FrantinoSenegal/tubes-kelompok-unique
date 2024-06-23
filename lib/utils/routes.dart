@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tubes_unique/pages/home_page.dart';
+import 'package:tubes_unique/pages/main_page.dart';
 import 'package:tubes_unique/ui/home_screen.dart';
 import 'package:tubes_unique/ui/login.dart';
 import 'package:tubes_unique/ui/register.dart';
@@ -17,7 +19,7 @@ Route? generateRoute(RouteSettings settings) {
       _route = _pageRoute(body: RegisterScreen(), settings: settings);
       break;
     case rHome:
-      _route = _pageRoute(body: HomeScreen(), settings: settings);
+      _route = _pageRoute(body: MainPage(), settings: settings);
       break;
   }
   return _route;

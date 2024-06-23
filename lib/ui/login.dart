@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:tubes_unique/bloc/login/login_cubit.dart';
+import 'package:tubes_unique/pages/home_page.dart';
 import 'package:tubes_unique/ui/home_screen.dart';
 import 'package:tubes_unique/ui/phone_auth.dart';
 import '../utils/routes.dart';
-
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -28,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return await FirebaseAuth.instance.signInWithCredential(credential).then(
         (value) async => await Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            MaterialPageRoute(builder: (context) => HomePage()),
             (route) => false));
   }
 

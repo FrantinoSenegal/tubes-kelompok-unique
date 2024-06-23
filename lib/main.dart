@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tubes_unique/bloc/login/login_cubit.dart';
 import 'package:tubes_unique/bloc/register/register_cubit.dart';
+import 'package:tubes_unique/pages/home_page.dart';
+import 'package:tubes_unique/pages/main_page.dart';
 import 'package:tubes_unique/ui/home_screen.dart';
 import 'package:tubes_unique/ui/login.dart';
 import 'package:tubes_unique/ui/splash.dart';
@@ -38,7 +40,7 @@ class MyApp extends StatelessWidget {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
               } else if (snapshot.hasData) {
-                return HomeScreen();
+                return MainPage();
               } else if (snapshot.hasError) {
                 return const Center(
                   child: Text('Something went wrong'),
